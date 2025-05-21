@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronUp, ChevronDown } from 'lucide-react';
 import './Footer.css';
@@ -18,6 +18,10 @@ const Footer = () => {
   const [activeItem, setActiveItem] = useState(''); // Changed from 'Students' to ''
   const touchStartY = useRef(null);
   const menuRef = useRef(null);
+  const isDraggingRef = useRef(false);
+  
+  // Track drag distance for smoother interactions
+  const dragDistanceRef = useRef(0);
 
   const menuItems = [
     {
@@ -105,24 +109,74 @@ const Footer = () => {
     },
   ];
 
+  // Add mouse event handlers to support desktop interactions too
+  const handleMouseDown = (e) => {
+    touchStartY.current = e.clientY;
+    isDraggingRef.current = true;
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleMouseMove = (e) => {
+    if (!isDraggingRef.current) return;
+    const touchCurrentY = e.clientY;
+    const deltaY = touchStartY.current - touchCurrentY;
+    
+    // Update dragDistance to track cumulative movement
+    dragDistanceRef.current += deltaY;
+    
+    // Use a smaller threshold for better responsiveness
+    if (dragDistanceRef.current > 20 && !isMenuExpanded) {
+      setIsMenuExpanded(true);
+      dragDistanceRef.current = 0;
+    } else if (dragDistanceRef.current < -20 && isMenuExpanded) {
+      setIsMenuExpanded(false);
+      dragDistanceRef.current = 0;
+    }
+    
+    touchStartY.current = touchCurrentY;
+  };
+
+  const handleMouseUp = () => {
+    isDraggingRef.current = false;
+    dragDistanceRef.current = 0;
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  };
+
   const handleTouchStart = (e) => {
     touchStartY.current = e.touches[0].clientY;
+    isDraggingRef.current = true;
+    dragDistanceRef.current = 0;
   };
 
   const handleTouchMove = (e) => {
-    if (touchStartY.current === null) return;
-    e.preventDefault();
+    if (!isDraggingRef.current) return;
+    
     const touchCurrentY = e.touches[0].clientY;
     const deltaY = touchStartY.current - touchCurrentY;
-
-    if (deltaY > 30 && !isMenuExpanded) {
+    
+    // Update dragDistance to track cumulative movement
+    dragDistanceRef.current += deltaY;
+    
+    // Use a smaller threshold for better responsiveness
+    if (dragDistanceRef.current > 20 && !isMenuExpanded) {
       setIsMenuExpanded(true);
-    } else if (deltaY < -30 && isMenuExpanded) {
+      dragDistanceRef.current = 0;
+      // Don't prevent default for the full gesture to allow scrolling
+    } else if (dragDistanceRef.current < -20 && isMenuExpanded) {
       setIsMenuExpanded(false);
+      dragDistanceRef.current = 0;
+      // Prevent default only when we're actually handling the drag action
+      e.preventDefault();
     }
+    
+    touchStartY.current = touchCurrentY;
   };
 
   const handleTouchEnd = () => {
+    isDraggingRef.current = false;
+    dragDistanceRef.current = 0;
     touchStartY.current = null;
   };
 
@@ -137,22 +191,41 @@ const Footer = () => {
     }
   };
 
+  // Add explicit controls to expand/collapse menu
+  const toggleMenu = () => {
+    setIsMenuExpanded(prev => !prev);
+  };
+
+  // Clean up event listeners when component unmounts
+  useEffect(() => {
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, []);
+
   return (
     <div
       className={`footer-menu-section ${isMenuExpanded ? 'expanded' : ''}`}
       ref={menuRef}
-      style={{ touchAction: 'none' }}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
     >
-      <div className="drag-message" style={{ opacity: isMenuExpanded ? 0 : 1 }}>
-        <ChevronUp />
-        Drag up to see all modules
-      </div>
-      <div className="drag-message" style={{ opacity: isMenuExpanded ? 1 : 0 }}>
-        <ChevronDown />
-        Drag down to collapse
+      {/* Make the drag indicator clickable for better UX */}
+      <div 
+        className="drag-indicator"
+        onClick={toggleMenu}
+        onMouseDown={handleMouseDown}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        <div className="drag-message" style={{ opacity: isMenuExpanded ? 0 : 1 }}>
+          <ChevronUp />
+          Drag up to see all modules
+        </div>
+        <div className="drag-message" style={{ opacity: isMenuExpanded ? 1 : 0 }}>
+          <ChevronDown />
+          Drag down to collapse
+        </div>
       </div>
       <div className="menu-grid">
         {menuItems.map((item) => (
