@@ -321,7 +321,6 @@ function CourseDetails() {
                 <tr>
                   <th className='firstColumn'></th>
                   <th className='sticky-column'>Campus ID</th>
-
                   <th>CAMPUS_CODE</th>
                   <th>CAMPUS_NAME</th>
                   <th>CAMPUS_TYPE</th>
@@ -450,8 +449,8 @@ function CourseDetails() {
               {!inital ? (demoData.map((row, index) => (
                 <tr key={row.id} className='bodyData'>
                   <td className='firstColumn'><input type='checkbox' /></td>
-                  <td className='sticky-column'>{row.id}</td>
-                  <tr>
+                  <td className='sticky-column'>{row.CAMPUS_ID}</td>
+               
                     <td>{row.CAMPUS_CODE}</td>
                     <td>{row.CAMPUS_NAME}</td>
                     <td>{row.CAMPUS_TYPE}</td>
@@ -510,16 +509,15 @@ function CourseDetails() {
                     <td>{row.HOSTEL_AVAILABLE}</td>
                     <td>{row.TRANSPORT_AVAILABLE}</td>
                     <td>{row.IS_ACTIVE}</td>
-                  </tr>
-
+{/*                   
                   <td>
-                    {/* <img src={tsearch} alt="search" className='searchicon' /> 
+                    <img src={tsearch} alt="search" className='searchicon' /> 
                  <img src={sec} alt="lastsearch" className='lastsearchicon' />
                
                 <img src={view} alt="view" className='viewicon' />
-                   */}
-                  </td>
-
+                  
+                  </td> */}
+                 <td>images</td> 
                 </tr>
               ))) : (
                 <tr className='addingdatarow'>
@@ -582,19 +580,7 @@ function CourseDetails() {
                   <td className='addfieldrowtd'><input type='text' className='addfieldrow' placeholder='add field' /></td>
                   <td className='addfieldrowtd'><input type='text' className='addfieldrow' placeholder='add field' /></td>
                   <td className='addfieldrowtd'><input type='text' className='addfieldrow' placeholder='add field' /></td>
-                  <td className='addfieldrowtd'><input type='text' className='addfieldrow' placeholder='add field' /></td>
-                  <td className='addfieldrowtd'><input type='text' className='addplayrollfieldrow' placeholder='add field' /></td>
-                  <td className='addfieldrowtd'><input type='text' className='addfieldrow' placeholder='add field' /></td>
-                  <td className='addfieldrowtd'><input type='text' className='addfieldrow' placeholder='add field' /></td>
-                  <td className='addfieldrowtd'><input type='text' className='addfieldrow' placeholder='add field' /></td>
-                  <td className='addfieldrowtd'><input type='text' className='addfieldrow' placeholder='add field' /></td>
-                  <td className='addfieldrowtd'><input type='text' className='addfieldrow' placeholder='add field' /></td>
-                  <td className='addfieldrowtd'><input type='text' className='addfieldrow' placeholder='add field' /></td>
-                  <td className='addfieldrowtd'><input type='text' className='addfieldrow' placeholder='add field' /></td>
-                  <td className='addfieldrowtd'><input type='text' className='addfieldrow' placeholder='add field' /></td>
-                  <td className='addfieldrowtd'><input type='text' className='addplayrollfieldrow' placeholder='add field' /></td>
-                  <td className='addfieldrowtd'><input type='text' className='addfieldrow' placeholder='add field' /></td>
-                  <td className='addfieldrowtd'><input type='text' className='addfieldrow' placeholder='add field' /></td>
+
 
                   <td className='lastRow'>
                     <svg width="63" height="26" onClick={() => saveData()} viewBox="0 0 63 26" fill="none" xmlns="http://www.w3.org/2000/svg">
